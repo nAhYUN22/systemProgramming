@@ -1,3 +1,5 @@
+// joystick 움직임에 따라 x,y값만 출력하는 것이 아닌 방향 출력해주는 코드
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -69,11 +71,38 @@ void handleClient(int clientSocket)
 {
     char buffer[1024];
     int bytesRead;
+    int code, ch0, ch1, ch2;
 
     while ((bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0)
     {
         buffer[bytesRead] = '\0';
-        printf("rc %d, %s \n", clientSocket, buffer);
+        int result = sscanf(buffer, "%d %d %d %d", &code, &ch0, &ch1, &ch2);
+
+        // printf("rc %d, ch1: %d, ch2: %d, ch3: %d \n", clientSocket, ch0, ch1, ch2);
+        if (((ch0 > 400 && ch0 < 430) && ch1 == 0) && (ch2 > 400 && ch2 < 550))
+        {
+            printf("Stop\n");
+        }
+        if (ch1 == 0 && (ch2 > 990 && ch2 < 1100))
+        {
+            printf("Right\n");
+        }
+        if (((ch0 > 400 && ch0 < 430) && ch1 == 0) && ch2 == 0)
+        {
+            printf("Left\n");
+        }
+        if ((ch0 > 1010 && ch0 < 1023) && ch1 == 0)
+        {
+            printf("Forward\n");
+        }
+        if (ch0 == 266 && ch1 == 266)
+        {
+            printf("Backward\n");
+        }
+        if (ch0 == 0)
+        {
+            printf("button\n");
+        }
     }
 
     if (bytesRead == -1)
